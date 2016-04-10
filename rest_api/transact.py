@@ -1,9 +1,12 @@
-import MySQLdb
 import sys
 import commands
 import os
 import shutil
+import MySQLdb
 from docker import Client
+
+# todo: 与nap-core合并冗余代码
+
 
 database_url = '192.168.56.105'
 client_list = ['192.168.56.105:2376', '192.168.56.106:2376']
@@ -21,9 +24,9 @@ class AppTransac(object):
         self.user = user
         self.password = password
 
-    @classmethod 
+    @classmethod
     def create_user(cls, new_user, new_password):
-	# if user exsits, return false, else create
+        # if user exsits, return false, else create
         new_db = MySQLdb.connect(database_url, 'root', 'monkey')
         new_cursor = new_db.cursor()
         new_cursor.execute("show databases;")
@@ -59,9 +62,11 @@ class AppTransac(object):
 
         # something else need, net volume_from and soon
         for client in client_list:
-            commands.getstatusoutput("ssh monkey@%s 'cd /volume_data && sudo mkdir %s'" % (client.split(":")[0], new_user))
+            commands.getstatusoutput(
+                "ssh monkey@%s 'cd /volume_data && sudo mkdir %s'" % (client.split(":")[0], new_user))
             # still need mfsmount
-            commands.getstatusoutput("ssh monkey@%s 'docker run -d --name %s -v /volume_data/%s:/data busybox'" % (client.split(":")[0], new_user+"_volume", new_user))
+            commands.getstatusoutput("ssh monkey@%s 'docker run -d --name %s -v /volume_data/%s:/data busybox'" % (
+            client.split(":")[0], new_user + "_volume", new_user))
 
         return [True, "create user success"]
 
@@ -136,9 +141,10 @@ class AppTransac(object):
         os.mkdir('/home/monkey/app/%s' % name)
         old = sys.stdout
         f = open(os.devnull, 'w')
-        #sys.stdout = f
+        # sys.stdout = f
         a, b = commands.getstatusoutput(
-            'git clone %s /home/monkey/app/%s && cd /home/monkey/app/%s && docker-compose up -d %s %s' % (url, name, name, self.user, self.password))
+            'git clone %s /home/monkey/app/%s && cd /home/monkey/app/%s && docker-compose up -d %s %s' % (
+            url, name, name, self.user, self.password))
         sys.stdout = old
         cursor.execute("insert into project(name, url) values('%s', '%s')" % (name, url))
         db.commit()

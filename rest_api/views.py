@@ -17,6 +17,8 @@ from rest_framework.decorators import (
 from orchestration.nap_api import app_info, project_create
 
 
+# todo: 适配nap-core
+
 @api_view(['GET', 'POST'])
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated,))
@@ -24,7 +26,7 @@ def project_list(request, format=None):
     """
     list all servie or create a service
     """
-    username,passwd = str(request.user), str(request.user)
+    username, passwd = str(request.user), str(request.user)
 
     if request.method == 'GET':
         ret_data = {}

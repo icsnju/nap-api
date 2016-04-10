@@ -1,5 +1,8 @@
 # restful api for nap application
-> NAP的restful api是通过JSON来对平台进行管理，包括平台硬件的监控、应用的创建、状态的查询以及文件管理等。restful api是通过Django自身提供的[REST framework](http://www.django-rest-framework.org/)实现的，详见链接。
+> NAP的restful api是通过JSON来对平台进行管理，包括平台硬件的监控、应用的创建、状态的查询以及文件管理等。
+> restful api是通过Django自身提供的[REST framework](http://www.django-rest-framework.org/)实现的，详见链接。
+
+todo: 合并到nap-core；将用户认证部分提取为子模块；移除冗余和旧代码
 
 ## 环境依赖：
 > sudo pip install django==1.8.4    
@@ -13,19 +16,25 @@
 ```
 $ python manage.py runserver 0.0.0.0:8000
 ```
-同样，django项目也可以使用apache服务器,只需要进行简单的设置即可，详见django官方文档[How to use Django with Apache and mod_wsgi](https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/)
+同样，django项目也可以使用apache服务器,只需要进行简单的设置即可。
+详见django官方文档[How to use Django with Apache and mod_wsgi](https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/)
 
 ## app_api: 应用的状态信息
 该部分是对运行在NAP平台上的应用进行管理的接口，包括应用和服务的创建、应用状态的获取以及应用的开启和暂停等。
 
-所有请求使用token进行认证，既用户进行信息的请求前，需要先认证，即下面5对应的操作，认证成功后，在进行请求时，需要将token置于Http的头部字段Authorizations中，curl和httpie对应的示例如下：
+所有请求使用token进行认证，既用户进行信息的请求前，需要先认证，即下面5对应的操作。
+认证成功后，在进行请求时，需要将token置于Http的头部字段Authorizations中，curl和httpie对应的示例如下：
 ```
 curl -X GET http://127.0.0.1:8000/app/porjects/ -H 'Authorizations:Token d83***3d8'
 
 http http://127.0.0.1:8000/app/projects/ Authorizations:'Token d83***3d8'
 ```
+
 这里认证的使用的数据库是LDAP数据库:     
-> LDAP是一种轻量级的目录管理协议(LightWeight Directory Access Protocal)，它是以树状的层次结构来存储数据，类似于UNIX的目录树。LDAP数据库是一种对读操作进行优化的数据库，当系统的读写比例比较大时，LDAP会体现出极高的性能；此外因为LDAP的存储结构是树的形式，可以轻易的将树的一个分支迁移到其他的树中，所以它管理的数据是非常便携或易于共享的。针对用户认证管理这种改动不是很频繁的事务，一般都采用LDAP的方案。Django本身对LDAP也是支持的，只需要在配置文件中添加相关配置即可。
+> LDAP是一种轻量级的目录管理协议(LightWeight Directory Access Protocal)，它是以树状的层次结构来存储数据，类似于UNIX的目录树。
+LDAP数据库是一种对读操作进行优化的数据库，当系统的读写比例比较大时，LDAP会体现出极高的性能；
+此外因为LDAP的存储结构是树的形式，可以轻易的将树的一个分支迁移到其他的树中，所以它管理的数据是非常便携或易于共享的。
+针对用户认证管理这种改动不是很频繁的事务，一般都采用LDAP的方案。Django本身对LDAP也是支持的，只需要在配置文件中添加相关配置即可。
 
 
 1. projects的请求
@@ -112,7 +121,7 @@ http http://127.0.0.1:8000/app/projects/ Authorizations:'Token d83***3d8'
         ```
 
 
-4. 用户认证使用的是rest-framework自带的TokenAuthentication.
+5. 用户认证使用的是rest-framework自带的TokenAuthentication.
     - 方法: Post
     - url: /auth
     - 参数: {'username':xxx, 'password':xxx}
@@ -131,7 +140,8 @@ http http://127.0.0.1:8000/app/projects/ Authorizations:'Token d83***3d8'
 
 
 ## filebrowser:访问主机文件系统
-该部分是从开源项目[django-extjs-filebrowser](https://github.com/revolunet/django-extjs-filebrowser)的后台Django部分直接迁移出来的，针对django-restframework框架进行了相应的修改。
+该部分是从开源项目[django-extjs-filebrowser](https://github.com/revolunet/django-extjs-filebrowser)的后台Django部分直接迁移出来的。
+针对django-restframework框架进行了相应的修改。
 
 1. 请求一个文件夹下的目录树  
     - 方法: POST  
